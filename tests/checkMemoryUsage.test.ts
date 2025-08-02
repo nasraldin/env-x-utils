@@ -1,11 +1,15 @@
-import { checkMemoryUsage } from '../lib/utils';
+import { checkMemoryUsage } from '../lib/utils.js';
 
 describe('utils/checkMemoryUsage', () => {
-  let consoleWarnSpy: jest.SpyInstance;
+  const originalConsoleWarn = console.warn;
+  let consoleWarnCalls: string[] = [];
 
   beforeEach(() => {
-    // Spy on console.warn
-    consoleWarnSpy = jest.spyOn(console, 'warn').mockImplementation();
+    // Reset console.warn calls
+    consoleWarnCalls = [];
+    console.warn = (message: string) => {
+      consoleWarnCalls.push(message);
+    };
 
     // Reset window.performance for each test
     // @ts-expect-error - setting window.performance
@@ -13,7 +17,8 @@ describe('utils/checkMemoryUsage', () => {
   });
 
   afterEach(() => {
-    consoleWarnSpy.mockRestore();
+    // Restore original console.warn
+    console.warn = originalConsoleWarn;
     // Reset window.performance
     // @ts-expect-error - deleting window.performance
     delete window.performance;
@@ -32,7 +37,7 @@ describe('utils/checkMemoryUsage', () => {
     });
 
     checkMemoryUsage();
-    expect(consoleWarnSpy).toHaveBeenCalledWith(
+    expect(consoleWarnCalls).toContain(
       '🚨 Memory usage is high! Please monitor performance.',
     );
   });
@@ -50,7 +55,7 @@ describe('utils/checkMemoryUsage', () => {
     });
 
     checkMemoryUsage();
-    expect(consoleWarnSpy).not.toHaveBeenCalled();
+    expect(consoleWarnCalls).toHaveLength(0);
   });
 
   it('should warn when memory API is not supported', () => {
@@ -61,7 +66,7 @@ describe('utils/checkMemoryUsage', () => {
     });
 
     checkMemoryUsage();
-    expect(consoleWarnSpy).toHaveBeenCalledWith(
+    expect(consoleWarnCalls).toContain(
       '🚫 Memory API is not supported in this browser.',
     );
   });
@@ -72,6 +77,6 @@ describe('utils/checkMemoryUsage', () => {
     delete window.performance;
 
     checkMemoryUsage();
-    expect(consoleWarnSpy).not.toHaveBeenCalled();
+    expect(consoleWarnCalls).toHaveLength(0);
   });
 });
