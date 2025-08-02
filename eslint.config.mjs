@@ -1,14 +1,12 @@
-// @ts-check
-import path from 'node:path';
+import { dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { fixupConfigRules } from '@eslint/compat';
 import { FlatCompat } from '@eslint/eslintrc';
 import js from '@eslint/js';
-import eslintPluginPrettierRecommended from 'eslint-plugin-prettier/recommended';
-import ts from 'typescript-eslint';
+import pluginPrettierRecommended from 'eslint-plugin-prettier/recommended';
+import tseslint from 'typescript-eslint';
 
 const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+const __dirname = dirname(__filename);
 
 const compat = new FlatCompat({
   baseDirectory: __dirname,
@@ -17,17 +15,17 @@ const compat = new FlatCompat({
   allConfig: js.configs.all,
 });
 
-const tsConfig = ts.config(
+const tsConfig = tseslint.config(
   js.configs.recommended,
-  ...ts.configs.recommended,
-  ...ts.configs.strict,
+  ...tseslint.configs.recommended,
+  ...tseslint.configs.strict,
+  ...tseslint.configs.stylistic,
 );
 
 const config = [
-  ...compat.plugins('security'),
-  ...fixupConfigRules([...compat.extends('prettier')]),
   ...tsConfig,
-  eslintPluginPrettierRecommended,
+  ...compat.extends('prettier'),
+  pluginPrettierRecommended,
   {
     files: ['**/*.{js,mjs,ts}'],
     rules: {
@@ -46,7 +44,7 @@ const config = [
     },
   },
   {
-    ignores: ['node_modules', '.history', 'dist', 'package'],
+    ignores: ['node_modules', '.history', 'dist'],
   },
 ];
 

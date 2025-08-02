@@ -1,4 +1,4 @@
-import { safeStringify } from '../lib/utils';
+import { safeStringify } from '../lib/utils.js';
 
 describe('utils/safeStringify', () => {
   it('should stringify regular objects normally', () => {

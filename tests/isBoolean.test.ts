@@ -1,4 +1,4 @@
-import { isBoolean } from '../lib/utils';
+import { isBoolean } from '../lib/utils.js';
 
 describe('utils/isBoolean', () => {
   test('should return true for boolean true', () => {

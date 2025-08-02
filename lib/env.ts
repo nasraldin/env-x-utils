@@ -29,7 +29,7 @@
  * @module env
  */
 
-import { safeArray } from './utils';
+import { safeArray } from './utils.js';
 
 /**
  * Supported environment types
